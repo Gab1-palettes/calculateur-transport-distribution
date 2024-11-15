@@ -11,13 +11,13 @@
             padding: 0;
             background-color: #f8f9fa;
             color: #333;
+            overflow-x: hidden;
         }
         header {
             background-color: #007bff;
             color: white;
             padding: 20px 0;
             text-align: center;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
         }
         header h1 {
             margin: 0;
@@ -35,11 +35,6 @@
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             border-top: 5px solid #28a745;
-            animation: fadeIn 1s ease-out;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
         }
         label {
             display: block;
@@ -81,40 +76,102 @@
             text-align: center;
             color: #28a745;
         }
-        .icon {
-            font-size: 2rem;
-            color: #28a745;
-        }
-        footer {
-            text-align: center;
-            padding: 10px 0;
-            background-color: #6c757d;
-            color: white;
+        .warehouse {
             position: relative;
-            bottom: 0;
             width: 100%;
+            height: 300px;
+            background: linear-gradient(to bottom, #cccccc 50%, #e8f5e9 50%);
+            border-top: 5px solid #28a745;
+            overflow: hidden;
         }
-        footer p {
-            margin: 0;
+        .conveyor {
+            position: absolute;
+            bottom: 40px;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            background: #333;
+        }
+        .pallet {
+            width: 50px;
+            height: 20px;
+            background: #28a745;
+            position: absolute;
+            bottom: 50px;
+            animation: movePallet 2s linear forwards;
+        }
+        .truck {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 150px;
+            height: 80px;
+            background: #28a745; /* Vert camion */
+            transition: transform 2s ease-in-out;
+        }
+        .truck .plateau {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            width: 130px;
+            height: 10px;
+            background: #6c757d; /* Plateau gris */
+        }
+        .truck:before {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 10px;
+            width: 20px;
+            height: 20px;
+            background: #333;
+            border-radius: 50%;
+        }
+        .truck:after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            right: 10px;
+            width: 20px;
+            height: 20px;
+            background: #333;
+            border-radius: 50%;
+        }
+        @keyframes movePallet {
+            0% { left: -60px; }
+            100% { left: 80%; }
+        }
+        @keyframes stackPallet {
+            0% { transform: translateY(100px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
         }
     </style>
 </head>
 <body>
     <header>
-        <h1>Calculateur de Coût de Transport</h1>
+        <h1>Prévision du Coût de Livraison</h1>
         <p>Palettes Distribution - Spécialiste en emballages, caisses et énergie bois</p>
-        <div class="icon">📦</div>
     </header>
 
     <div class="container">
+        <p style="color: #333; font-size: 1rem; margin-bottom: 15px;">
+            Entrez le temps en heures (ex. : 3h30 = 3.5).
+        </p>
         <form id="transport-form">
-            <label for="temps">Temps de trajet prévu (ex. : 3h30 = 3.5) :</label>
+            <label for="temps">Temps de trajet prévu (en heures) :</label>
             <input type="number" id="temps" name="temps" required step="0.1" placeholder="Exemple : 2.5">
-            
             <button type="button" class="btn" onclick="calculer()">Calculer</button>
         </form>
 
-        <div class="result" id="result">🔍 Résultat apparaîtra ici</div>
+        <div class="result" id="result"></div>
+    </div>
+
+    <div class="warehouse">
+        <div class="conveyor"></div>
+        <div id="pallet-container"></div>
+        <div class="truck" id="truck">
+            <div class="plateau" id="plateau"></div>
+        </div>
     </div>
 
     <footer>
@@ -122,6 +179,28 @@
     </footer>
 
     <script>
+        let loadedPallets = 0;
+
+        function addPallet() {
+            if (loadedPallets >= 5) return;
+
+            const plateau = document.getElementById("plateau");
+            const pallet = document.createElement("div");
+            pallet.className = "pallet";
+            pallet.style.bottom = `${10 + loadedPallets * 25}px`;
+            pallet.style.animation = "stackPallet 1s ease forwards";
+
+            plateau.appendChild(pallet);
+            loadedPallets++;
+
+            if (loadedPallets === 5) {
+                setTimeout(() => {
+                    const truck = document.getElementById("truck");
+                    truck.style.transform = "translateX(100%)";
+                }, 1000);
+            }
+        }
+
         function calculer() {
             const temps = parseFloat(document.getElementById('temps').value);
 
@@ -131,18 +210,16 @@
             const imprévus = 1.4; // Marge pour imprévus (40%)
 
             if (!isNaN(temps) && temps > 0) {
-                // Calcul du coût minimum
                 const coutMin = temps * tarifHoraire * marge;
-
-                // Calcul du coût maximum (ajout de 40% pour imprévus)
                 const coutMax = coutMin * imprévus;
-
-                // Affichage discret des résultats
                 document.getElementById('result').innerText = 
-                    `🔍 Coût estimé : entre ${coutMin.toFixed(2)} € et ${coutMax.toFixed(2)} € HT`;
+                    `Coût estimé : entre ${coutMin.toFixed(2)} € et ${coutMax.toFixed(2)} € HT`;
+                for (let i = 0; i < 5; i++) {
+                    setTimeout(addPallet, i * 1000);
+                }
             } else {
                 document.getElementById('result').innerText = 
-                    "❗ Veuillez entrer un temps de trajet valide.";
+                    "Veuillez entrer un temps de trajet valide.";
             }
         }
     </script>
