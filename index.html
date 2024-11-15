@@ -1,3 +1,5 @@
+# Reverting to a professional version with only the calculation feature
+professional_html = """
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -11,7 +13,6 @@
             padding: 0;
             background-color: #f8f9fa;
             color: #333;
-            overflow-x: hidden;
         }
         header {
             background-color: #007bff;
@@ -76,84 +77,11 @@
             text-align: center;
             color: #28a745;
         }
-        .warehouse {
-            position: relative;
-            width: 100%;
-            height: 300px;
-            background: linear-gradient(to bottom, #cccccc 50%, #e8f5e9 50%);
-            border-top: 5px solid #28a745;
-            overflow: hidden;
-        }
-        .depot {
-            position: absolute;
-            bottom: 50px;
-            left: 50px;
-            width: 100px;
-            height: 150px;
-            background: #6c757d;
-            border: 2px solid #333;
-            border-radius: 5px;
-        }
-        .conveyor {
-            position: absolute;
-            bottom: 100px;
-            left: 150px;
-            width: 300px;
-            height: 10px;
-            background: #333;
-        }
-        .pallet {
-            width: 50px;
-            height: 20px;
-            background: #28a745;
-            position: absolute;
-            bottom: 110px;
-            animation: movePallet 5s linear forwards;
-        }
-        .truck {
-            position: absolute;
-            bottom: 50px;
-            left: 500px;
-            width: 150px;
-            height: 80px;
-            background: #28a745; /* Vert camion */
-            transition: transform 2s ease-in-out;
-        }
-        .truck .plateau {
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
-            width: 130px;
-            height: 10px;
-            background: #6c757d; /* Plateau gris */
-        }
-        .truck:before {
-            content: "";
-            position: absolute;
-            bottom: -10px;
-            left: 10px;
-            width: 20px;
-            height: 20px;
-            background: #333;
-            border-radius: 50%;
-        }
-        .truck:after {
-            content: "";
-            position: absolute;
-            bottom: -10px;
-            right: 10px;
-            width: 20px;
-            height: 20px;
-            background: #333;
-            border-radius: 50%;
-        }
-        @keyframes movePallet {
-            0% { left: 0; }
-            100% { left: 300px; }
-        }
-        @keyframes stackPallet {
-            0% { transform: translateY(100px); opacity: 0; }
-            100% { transform: translateY(0); opacity: 1; }
+        footer {
+            text-align: center;
+            padding: 10px 0;
+            background-color: #6c757d;
+            color: white;
         }
     </style>
 </head>
@@ -176,42 +104,11 @@
         <div class="result" id="result"></div>
     </div>
 
-    <div class="warehouse">
-        <div class="depot"></div>
-        <div class="conveyor"></div>
-        <div id="pallet-container"></div>
-        <div class="truck" id="truck">
-            <div class="plateau" id="plateau"></div>
-        </div>
-    </div>
-
     <footer>
         <p>&copy; 2024 Palettes Distribution. Tous droits réservés.</p>
     </footer>
 
     <script>
-        let loadedPallets = 0;
-
-        function addPallet() {
-            if (loadedPallets >= 5) return;
-
-            const plateau = document.getElementById("plateau");
-            const pallet = document.createElement("div");
-            pallet.className = "pallet";
-            pallet.style.bottom = `${10 + loadedPallets * 25}px`;
-            pallet.style.animation = "stackPallet 1s ease forwards";
-
-            plateau.appendChild(pallet);
-            loadedPallets++;
-
-            if (loadedPallets === 5) {
-                setTimeout(() => {
-                    const truck = document.getElementById("truck");
-                    truck.style.transform = "translateX(100%)";
-                }, 1000);
-            }
-        }
-
         function calculer() {
             const temps = parseFloat(document.getElementById('temps').value);
 
@@ -225,9 +122,6 @@
                 const coutMax = coutMin * imprévus;
                 document.getElementById('result').innerText = 
                     `Coût estimé : entre ${coutMin.toFixed(2)} € et ${coutMax.toFixed(2)} € HT`;
-                for (let i = 0; i < 5; i++) {
-                    setTimeout(addPallet, i * 1000);
-                }
             } else {
                 document.getElementById('result').innerText = 
                     "Veuillez entrer un temps de trajet valide.";
@@ -236,3 +130,12 @@
     </script>
 </body>
 </html>
+"""
+
+# Writing the professional HTML to a file for testing
+file_path = "/mnt/data/professional_calculator.html"
+with open(file_path, "w") as html_file:
+    html_file.write(professional_html)
+
+file_path
+
