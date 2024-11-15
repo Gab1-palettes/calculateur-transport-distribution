@@ -84,11 +84,21 @@
             border-top: 5px solid #28a745;
             overflow: hidden;
         }
+        .depot {
+            position: absolute;
+            bottom: 50px;
+            left: 50px;
+            width: 100px;
+            height: 150px;
+            background: #6c757d;
+            border: 2px solid #333;
+            border-radius: 5px;
+        }
         .conveyor {
             position: absolute;
-            bottom: 40px;
-            left: 0;
-            width: 100%;
+            bottom: 100px;
+            left: 150px;
+            width: 300px;
             height: 10px;
             background: #333;
         }
@@ -97,13 +107,13 @@
             height: 20px;
             background: #28a745;
             position: absolute;
-            bottom: 50px;
-            animation: movePallet 2s linear forwards;
+            bottom: 110px;
+            animation: movePallet 5s linear forwards;
         }
         .truck {
             position: absolute;
-            bottom: 20px;
-            right: 20px;
+            bottom: 50px;
+            left: 500px;
             width: 150px;
             height: 80px;
             background: #28a745; /* Vert camion */
@@ -138,8 +148,8 @@
             border-radius: 50%;
         }
         @keyframes movePallet {
-            0% { left: -60px; }
-            100% { left: 80%; }
+            0% { left: 0; }
+            100% { left: 300px; }
         }
         @keyframes stackPallet {
             0% { transform: translateY(100px); opacity: 0; }
@@ -167,6 +177,7 @@
     </div>
 
     <div class="warehouse">
+        <div class="depot"></div>
         <div class="conveyor"></div>
         <div id="pallet-container"></div>
         <div class="truck" id="truck">
