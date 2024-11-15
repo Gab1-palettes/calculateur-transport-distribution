@@ -1,0 +1,162 @@
+# Re-creating the HTML content with improved structure and debugging considerations based on previous instructions
+
+html_content = """
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculateur de Coût de Transport - Palettes Distribution</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+        }
+        header img {
+            width: 100px;
+            margin-bottom: 10px;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2rem;
+        }
+        header p {
+            font-size: 1.1rem;
+            color: #f8f9fa;
+        }
+        .container {
+            max-width: 700px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-top: 5px solid #28a745; /* Vert */
+        }
+        label, input {
+            display: block;
+            margin: 10px 0;
+        }
+        input {
+            width: calc(100% - 20px);
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #dc3545; /* Rouge */
+            color: white;
+            font-size: 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .btn:hover {
+            background-color: #c82333;
+        }
+        .result {
+            margin-top: 20px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+        footer {
+            text-align: center;
+            padding: 10px 0;
+            background-color: #6c757d; /* Gris */
+            color: white;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+        footer p {
+            margin: 0;
+        }
+        .images {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-around;
+        }
+        .images img {
+            width: 100px;
+            height: auto;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="logo.png" alt="Logo Palettes Distribution">
+        <h1>Calculateur de Coût de Transport</h1>
+        <p>Palettes Distribution - Spécialiste en emballages, caisses et énergie bois</p>
+    </header>
+
+    <div class="container">
+        <form id="transport-form">
+            <label for="temps">Temps de trajet prévu (en heures) :</label>
+            <input type="number" id="temps" name="temps" required step="0.1" placeholder="Exemple : 2.5">
+            
+            <button type="button" class="btn" onclick="calculer()">Calculer</button>
+        </form>
+
+        <div class="result" id="result"></div>
+
+        <div class="images">
+            <img src="https://via.placeholder.com/150?text=Palette+1" alt="Palette 1">
+            <img src="https://via.placeholder.com/150?text=Palette+2" alt="Palette 2">
+            <img src="https://via.placeholder.com/150?text=Palette+3" alt="Palette 3">
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Palettes Distribution. Tous droits réservés.</p>
+    </footer>
+
+    <script>
+        function calculer() {
+            const temps = parseFloat(document.getElementById('temps').value);
+
+            // Paramètres internes (non visibles pour le client)
+            const tarifHoraire = 63; // Tarif interne par heure
+            const marge = 1.25; // Marge (25%)
+            const imprévus = 1.4; // Marge pour imprévus (40%)
+
+            if (!isNaN(temps) && temps > 0) {
+                // Calcul du coût minimum
+                const coutMin = temps * tarifHoraire * marge;
+
+                // Calcul du coût maximum (ajout de 40% pour imprévus)
+                const coutMax = coutMin * imprévus;
+
+                // Affichage discret des résultats
+                document.getElementById('result').innerText = 
+                    `Coût estimé : entre ${coutMin.toFixed(2)} € et ${coutMax.toFixed(2)} € HT`;
+            } else {
+                document.getElementById('result').innerText = 
+                    "Veuillez entrer un temps de trajet valide.";
+            }
+        }
+    </script>
+</body>
+</html>
+"""
+
+# Writing the content to the index.html file
+with open('/mnt/data/index.html', 'w') as file:
+    file.write(html_content)
+
+'/mnt/data/index.html'
