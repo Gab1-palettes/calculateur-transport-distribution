@@ -17,10 +17,7 @@
             color: white;
             padding: 20px 0;
             text-align: center;
-        }
-        header img {
-            width: 100px;
-            margin-bottom: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
         }
         header h1 {
             margin: 0;
@@ -37,46 +34,61 @@
             background-color: white;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            border-top: 5px solid #28a745; /* Vert */
+            border-top: 5px solid #28a745;
+            animation: fadeIn 1s ease-out;
         }
-        label, input {
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        label {
             display: block;
             margin: 10px 0;
-            color: #28a745; /* Vert pour les labels */
+            color: #28a745;
+            font-weight: bold;
+            font-size: 1.1rem;
         }
         input {
             width: calc(100% - 20px);
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
+            font-size: 1rem;
         }
         .btn {
             display: block;
             width: 100%;
             margin-top: 20px;
             padding: 10px;
-            background-color: #dc3545; /* Rouge */
+            background-color: #dc3545;
             color: white;
-            font-size: 1rem;
+            font-size: 1.1rem;
+            font-weight: bold;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
         }
         .btn:hover {
             background-color: #c82333;
+            transform: scale(1.05);
         }
         .result {
             margin-top: 20px;
             font-weight: bold;
             font-size: 1.2rem;
             text-align: center;
-            color: #28a745; /* Vert pour le texte du résultat */
+            color: #28a745;
+        }
+        .icon {
+            font-size: 2rem;
+            color: #28a745;
         }
         footer {
             text-align: center;
             padding: 10px 0;
-            background-color: #6c757d; /* Gris */
+            background-color: #6c757d;
             color: white;
             position: relative;
             bottom: 0;
@@ -85,24 +97,13 @@
         footer p {
             margin: 0;
         }
-        .images {
-            margin-top: 20px;
-            display: flex;
-            justify-content: space-around;
-        }
-        .images img {
-            width: 100px;
-            height: auto;
-            border-radius: 8px;
-            border: 2px solid #28a745; /* Bordure verte autour des images */
-        }
     </style>
 </head>
 <body>
     <header>
-        <img src="logo.png" alt="Logo Palettes Distribution">
         <h1>Calculateur de Coût de Transport</h1>
         <p>Palettes Distribution - Spécialiste en emballages, caisses et énergie bois</p>
+        <div class="icon">📦</div>
     </header>
 
     <div class="container">
@@ -113,13 +114,7 @@
             <button type="button" class="btn" onclick="calculer()">Calculer</button>
         </form>
 
-        <div class="result" id="result"></div>
-
-        <div class="images">
-            <img src="https://via.placeholder.com/150/28a745/FFFFFF?text=Palette+1" alt="Palette 1">
-            <img src="https://via.placeholder.com/150/28a745/FFFFFF?text=Palette+2" alt="Palette 2">
-            <img src="https://via.placeholder.com/150/28a745/FFFFFF?text=Palette+3" alt="Palette 3">
-        </div>
+        <div class="result" id="result">🔍 Résultat apparaîtra ici</div>
     </div>
 
     <footer>
@@ -144,10 +139,10 @@
 
                 // Affichage discret des résultats
                 document.getElementById('result').innerText = 
-                    `Coût estimé : entre ${coutMin.toFixed(2)} € et ${coutMax.toFixed(2)} € HT`;
+                    `🔍 Coût estimé : entre ${coutMin.toFixed(2)} € et ${coutMax.toFixed(2)} € HT`;
             } else {
                 document.getElementById('result').innerText = 
-                    "Veuillez entrer un temps de trajet valide.";
+                    "❗ Veuillez entrer un temps de trajet valide.";
             }
         }
     </script>
