@@ -8,78 +8,71 @@
         body {
             font-family: Arial, sans-serif;
             margin: 0;
-            padding: 0;
-            background-color: #f8f9fa;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #4caf50, #2196f3, #f44336, #ddd);
+            background-size: 400% 400%;
+            animation: gradientBG 8s infinite;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .form-container {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 600px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 20px;
             color: #333;
         }
-        header {
-            background-color: #007bff;
-            color: white;
-            padding: 20px 0;
-            text-align: center;
-        }
-        header h1 {
-            margin: 0;
-            font-size: 2rem;
-        }
-        header p {
-            font-size: 1.1rem;
-            color: #f8f9fa;
-        }
-        .container {
-            max-width: 700px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            border-top: 5px solid #28a745;
-        }
+
         label {
-            display: block;
-            margin: 10px 0;
-            color: #28a745;
+            font-size: 1.2rem;
             font-weight: bold;
-            font-size: 1.1rem;
-        }
-        input {
-            width: calc(100% - 20px);
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 1rem;
-        }
-        .btn {
+            color: #4caf50;
+            margin-bottom: 5px;
             display: block;
+        }
+
+        input, select {
             width: 100%;
-            margin-top: 20px;
             padding: 10px;
-            background-color: #dc3545;
-            color: white;
-            font-size: 1.1rem;
-            font-weight: bold;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2rem;
+            background: linear-gradient(45deg, #4caf50, #2196f3);
             border: none;
             border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.3s ease;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .btn:hover {
-            background-color: #c82333;
-            transform: scale(1.05);
-        }
-        .result {
-            margin-top: 20px;
-            font-weight: bold;
-            font-size: 1.2rem;
-            text-align: center;
-            color: #28a745;
-        }
-        footer {
-            text-align: center;
-            padding: 10px 0;
-            background-color: #6c757d;
             color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+        button:hover {
+            background: linear-gradient(45deg, #2196f3, #4caf50);
+            transform: scale(1.05);
         }
     </style>
 </head>
