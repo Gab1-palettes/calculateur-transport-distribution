@@ -8,47 +8,46 @@
         body {
             font-family: Arial, sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background: linear-gradient(135deg, #4caf50, #2196f3, #f44336, #ddd);
-            background-size: 400% 400%;
-            animation: gradientBG 8s infinite;
-        }
-
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            background: linear-gradient(135deg, #4caf50, #2196f3);
+            color: #fff;
         }
 
         .form-container {
             background: rgba(255, 255, 255, 0.9);
-            padding: 30px;
+            padding: 40px;
             border-radius: 15px;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-            width: 100%;
-            max-width: 600px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
         }
 
         h1 {
-            text-align: center;
             font-size: 2rem;
-            margin-bottom: 20px;
             color: #333;
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 20px;
         }
 
         label {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: bold;
-            color: #4caf50;
-            margin-bottom: 5px;
+            color: #333;
             display: block;
+            margin-bottom: 5px;
         }
 
-        input, select {
+        input {
             width: 100%;
             padding: 10px;
             font-size: 1rem;
@@ -60,64 +59,103 @@
         button {
             width: 100%;
             padding: 15px;
-            font-size: 1.2rem;
-            background: linear-gradient(45deg, #4caf50, #2196f3);
+            font-size: 1.1rem;
+            font-weight: bold;
             border: none;
             border-radius: 5px;
-            color: white;
-            font-weight: bold;
+            color: #fff;
+            background: linear-gradient(45deg, #4caf50, #2196f3);
             cursor: pointer;
-            transition: background 0.3s ease, transform 0.2s ease;
+            transition: transform 0.2s ease, background 0.3s ease;
         }
 
         button:hover {
-            background: linear-gradient(45deg, #2196f3, #4caf50);
             transform: scale(1.05);
+            background: linear-gradient(45deg, #2196f3, #4caf50);
+        }
+
+        .spinner {
+            display: none;
+            margin: 20px auto;
+            width: 50px;
+            height: 50px;
+            border: 6px solid #ccc;
+            border-top-color: #4caf50;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .result {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            color: #333;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: #999;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
-    <header>
+    <div class="form-container">
         <h1>Prévision du Coût de Livraison</h1>
-        <p>Palettes Distribution - Spécialiste en emballages, caisses et énergie bois</p>
-    </header>
-
-    <div class="container">
-        <p style="color: #333; font-size: 1rem; margin-bottom: 15px;">
-            Entrez le temps en format décimal (ex. : 3h30 = 3.5).
-        </p>
+        <p>Entrez le temps au format <b>hh:mm</b> (exemple : 3:30).</p>
         <form id="transport-form">
             <label for="temps">Temps de trajet prévu :</label>
-            <input type="number" id="temps" name="temps" required step="0.1" placeholder="Exemple : 2.5">
-            <button type="button" class="btn" onclick="calculer()">Calculer</button>
+            <input type="text" id="temps" name="temps" required placeholder="Exemple : 3:30">
+            <button type="button" onclick="calculer()">Calculer</button>
         </form>
-
+        <div class="spinner" id="spinner"></div>
         <div class="result" id="result"></div>
     </div>
 
     <footer>
-        <p>&copy; 2024 Palettes Distribution. Tous droits réservés.</p>
+        &copy; 2024 Palettes Distribution. Tous droits réservés.
     </footer>
 
     <script>
         function calculer() {
-            const temps = parseFloat(document.getElementById('temps').value);
+            const tempsInput = document.getElementById('temps').value;
+            const spinner = document.getElementById('spinner');
+            const result = document.getElementById('result');
 
-            // Paramètres internes (non visibles pour le client)
+            // Réinitialise l'affichage
+            result.innerText = "";
+            spinner.style.display = "block";
+
+            // Conversion automatique
+            const [heures, minutes] = tempsInput.split(':').map(Number);
+            if (isNaN(heures) || isNaN(minutes) || minutes >= 60) {
+                result.innerText = "Veuillez entrer un temps valide (format hh:mm).";
+                spinner.style.display = "none";
+                return;
+            }
+            const tempsDecimal = heures + minutes / 60;
+
+            // Paramètres internes
             const tarifHoraire = 63; // Tarif interne par heure
             const marge = 1.35; // Marge (25%)
             const imprévus = 1.6; // Marge pour imprévus (40%)
 
-            if (!isNaN(temps) && temps > 0) {
-                const coutMin = temps * tarifHoraire * marge;
-                const coutMax = coutMin * imprévus;
-                document.getElementById('result').innerText = 
-                    `Coût estimé : entre ${coutMin.toFixed(2)} € et ${coutMax.toFixed(2)} € HT`;
-            } else {
-                document.getElementById('result').innerText = 
-                    "Veuillez entrer un temps de trajet valide.";
-            }
+            // Calcul du coût
+            const coutMin = tempsDecimal * tarifHoraire * marge;
+            const coutMax = coutMin * imprévus;
+
+            // Simulation de délai pour spinner
+            setTimeout(() => {
+                spinner.style.display = "none";
+                result.innerText = `Coût estimé : entre ${coutMin.toFixed(2)} € et ${coutMax.toFixed(2)} € HT`;
+            }, 1000);
         }
     </script>
 </body>
 </html>
+
