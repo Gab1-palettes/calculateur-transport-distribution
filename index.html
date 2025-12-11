@@ -1,161 +1,242 @@
-<!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prévision du Coût de Livraison - Palettes Distribution</title>
+
+    <!-- Leaflet (carte OpenStreetMap, gratuite, sans clé API) -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin=""
+    />
+    <script
+        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin=""
+    ></script>
+
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
             background: linear-gradient(135deg, #4caf50, #2196f3);
-            color: #fff;
         }
 
         .form-container {
-            background: rgba(255, 255, 255, 0.9);
-            padding: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            padding: 30px 25px;
             border-radius: 15px;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-            max-width: 500px;
-            width: 90%;
-            text-align: center;
+            max-width: 520px;
+            width: 95%;
         }
 
         h1 {
-            font-size: 2rem;
-            color: #333;
-            margin-bottom: 20px;
+            font-size: 1.6rem;
+            margin-top: 0;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            text-align: center;
         }
 
-        p {
-            font-size: 1rem;
-            color: #666;
+        .subtitle {
+            font-size: 0.95rem;
             margin-bottom: 20px;
+            text-align: center;
+            color: #555;
         }
 
         label {
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: #333;
             display: block;
+            font-size: 0.9rem;
             margin-bottom: 5px;
+            font-weight: 600;
         }
 
-        input {
+        input, select {
             width: 100%;
-            padding: 10px;
-            font-size: 1rem;
-            margin-bottom: 20px;
-            border: 2px solid #ccc;
-            border-radius: 5px;
+            padding: 8px 10px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 0.95rem;
         }
 
         button {
             width: 100%;
-            padding: 15px;
-            font-size: 1.1rem;
-            font-weight: bold;
+            padding: 10px;
+            border-radius: 8px;
             border: none;
-            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: 600;
+            background: #2196f3;
             color: #fff;
-            background: linear-gradient(45deg, #4caf50, #2196f3);
             cursor: pointer;
-            transition: transform 0.2s ease, background 0.3s ease;
+            transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.2s ease;
         }
 
         button:hover {
-            transform: scale(1.05);
-            background: linear-gradient(45deg, #2196f3, #4caf50);
-        }
-
-        .spinner {
-            display: none;
-            margin: 20px auto;
-            width: 50px;
-            height: 50px;
-            border: 6px solid #ccc;
-            border-top-color: #4caf50;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+            background: #1976d2;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transform: translateY(-1px);
         }
 
         .result {
-            margin-top: 20px;
-            font-size: 1.2rem;
-            color: #333;
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            background: #e8f5e9;
+            border: 1px solid #c8e6c9;
+            font-size: 0.95rem;
         }
 
-        footer {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 0.9rem;
-            color: #999;
+        .result strong {
+            font-size: 1.05rem;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        #map {
+            margin-top: 15px;
+            width: 100%;
+            height: 250px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #ddd;
+        }
+
+        .disclaimer {
+            margin-top: 10px;
+            font-size: 0.8rem;
+            color: #666;
+            text-align: justify;
         }
     </style>
 </head>
 <body>
-    <div class="form-container">
-        <h1>Prévision du Coût de Livraison</h1>
-        <p>Entrez le temps au format <b>hh:mm</b> (exemple : 3:30).</p>
-        <form id="transport-form">
-            <label for="temps">Temps de trajet prévu :</label>
-            <input type="text" id="temps" name="temps" required placeholder="Exemple : 3:30">
-            <button type="button" onclick="calculer()">Calculer</button>
-        </form>
-        <div class="spinner" id="spinner"></div>
-        <div class="result" id="result"></div>
-    </div>
+<div class="form-container">
+    <h1>Prévision du coût de livraison</h1>
+    <p class="subtitle">
+        Estimation indicative selon la distance et le nombre de palettes.<br>
+        Pour un tarif définitif, merci de valider avec notre équipe commerciale.
+    </p>
 
-    <footer>
-        &copy; 2024 Palettes Distribution. Tous droits réservés.
-    </footer>
+    <!-- On récupère le type de palette via l'URL : ?ref=800x1200LG par ex. -->
+    <div id="palette-info" style="font-size:0.9rem;margin-bottom:10px;font-style:italic;"></div>
 
-    <script>
-        function calculer() {
-            const tempsInput = document.getElementById('temps').value;
-            const spinner = document.getElementById('spinner');
-            const result = document.getElementById('result');
+    <form id="livraison-form">
+        <label for="adresse">Adresse ou ville de livraison (indicatif)</label>
+        <input type="text" id="adresse" name="adresse" placeholder="Ex. Bordeaux, 33000">
 
-            // Réinitialise l'affichage
-            result.innerText = "";
-            spinner.style.display = "block";
+        <label for="distance">Distance estimée depuis notre dépôt (en km)</label>
+        <input type="number" id="distance" name="distance" min="1" step="1" required placeholder="Ex. 80">
 
-            // Conversion automatique
-            const [heures, minutes] = tempsInput.split(':').map(Number);
-            if (isNaN(heures) || isNaN(minutes) || minutes >= 60) {
-                result.innerText = "Veuillez entrer un temps valide (format hh:mm).";
-                spinner.style.display = "none";
-                return;
-            }
-            const tempsDecimal = heures + minutes / 60;
+        <label for="palettes">Nombre de palettes</label>
+        <input type="number" id="palettes" name="palettes" min="1" step="1" required placeholder="Ex. 35">
 
-            // Paramètres internes
-            const tarifHoraire = 63; // Tarif interne par heure
-            const marge = 1.35; // Marge (25%)
-            const imprévus = 1.6; // Marge pour imprévus (40%)
+        <label for="chargement">Type de chargement</label>
+        <select id="chargement" name="chargement">
+            <option value="partiel">Groupage / Chargement partiel</option>
+            <option value="complet">Camion complet</option>
+        </select>
 
-            // Calcul du coût
-            const coutMin = tempsDecimal * tarifHoraire * marge;
-            const coutMax = coutMin * imprévus;
+        <button type="submit">Estimer le coût de livraison</button>
+    </form>
 
-            // Simulation de délai pour spinner
-            setTimeout(() => {
-                spinner.style.display = "none";
-                result.innerText = `Coût estimé : entre ${coutMin.toFixed(2)} € et ${coutMax.toFixed(2)} € HT`;
-            }, 1000);
+    <div id="resultat" class="result" style="display:none;"></div>
+
+    <div id="map"></div>
+
+    <p class="disclaimer">
+        Les montants calculés sont fournis à titre purement indicatif sur la base d’un modèle simple.
+         Ils ne valent pas offre commerciale. Les tarifs réels peuvent varier
+        selon le transporteur, les volumes, l’accessibilité du site et la saisonnalité.
+    </p>
+</div>
+
+<script>
+    // 1) Récupération de la référence de palette dans l'URL (ex: ?ref=800x1200LG)
+    const params = new URLSearchParams(window.location.search);
+    const refPalette = params.get("ref");
+
+    const paletteInfoDiv = document.getElementById("palette-info");
+    if (refPalette) {
+        paletteInfoDiv.textContent =
+            "Calcul en cours pour la référence : " + refPalette + " (palettes remises dans le circuit).";
+    } else {
+        paletteInfoDiv.textContent =
+            "Sélectionnez vos palettes dans notre stock puis cliquez sur « Délais » pour lancer un calcul.";
+    }
+
+    // 2) Gestion du formulaire et calcul d’un coût indicatif
+    const form = document.getElementById("livraison-form");
+    const resDiv = document.getElementById("resultat");
+
+    form.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const distance = parseFloat(document.getElementById("distance").value || "0");
+        const palettes = parseInt(document.getElementById("palettes").value || "0", 10);
+        const chargement = document.getElementById("chargement").value;
+
+        if (!distance || !palettes) {
+            alert("Merci de renseigner au minimum la distance et le nombre de palettes.");
+            return;
         }
-    </script>
+
+        // MODELE À ADAPTER :
+        // - forfait de prise en charge
+        // - coût au km
+        // - coût par palette
+        let forfait = 100;      // € de base
+        let coutKm = 2.3;      // €/km
+        let coutPalette = 0.20; // €/palette
+
+        if (chargement === "complet") {
+            forfait = 80;
+            coutKm = 1.0;
+        }
+
+        const coutTotal = forfait + distance * coutKm + palettes * coutPalette;
+
+        resDiv.style.display = "block";
+        resDiv.innerHTML =
+            "<strong>Estimation indicative :</strong><br>" +
+            "≈ " + coutTotal.toFixed(2) + " € HT pour " + palettes +
+            " palettes sur " + distance + " km.<br>" +
+            "<span style='font-size:0.85rem;'>Référence : " + (refPalette || "non précisée") + "</span>";
+    });
+
+    // 3) Carte Leaflet / OpenStreetMap
+    const depotLat = 45.246;   // Montlieu-la-Garde (approx. ZA Le Milan)
+const depotLng = -0.256;
+;
+
+    const map = L.map("map").setView([depotLat, depotLng], 8);
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution: "&copy; OpenStreetMap"
+    }).addTo(map);
+
+    L.marker([depotLat, depotLng])
+        .addTo(map)
+        .bindPopup("Implantation de Palettes Distribution")
+        .openPopup();
+</script>
 </body>
 </html>
+
 
