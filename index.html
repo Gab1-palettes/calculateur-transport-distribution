@@ -167,8 +167,8 @@
         }
 
         // Fourchette de sécurité logistique ±10 %
-        const totalMin = (distance * baseKm * 0.9) + forfait + (palettes * variablePalette);
-        const totalMax = (distance * baseKm * 1.1) + forfait + (palettes * variablePalette);
+        const totalMin = (distance * baseKm * 0.8) + forfait + (palettes * variablePalette);
+        const totalMax = (distance * baseKm * 1.3) + forfait + (palettes * variablePalette);
 
         const francoMin = totalMin / palettes;
         const francoMax = totalMax / palettes;
@@ -194,4 +194,5 @@
 </script>
 </body>
 </html>
+
 
