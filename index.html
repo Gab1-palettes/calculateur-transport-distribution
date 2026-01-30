@@ -3,30 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prévision du Coût de Livraison - Palettes Distribution</title>
+    <title>Estimation Franco Livraison - Palettes Distribution</title>
 
-    <!-- Leaflet (carte OpenStreetMap, gratuite, sans clé API) -->
+    <!-- Leaflet -->
     <link
         rel="stylesheet"
         href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
         crossorigin=""
     />
     <script
         src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
         crossorigin=""
     ></script>
 
     <style>
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
 
         body {
             font-family: Arial, sans-serif;
             margin: 0;
-            padding: 0;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -35,36 +30,30 @@
         }
 
         .form-container {
-            background: rgba(255, 255, 255, 0.95);
-            color: #333;
+            background: rgba(255,255,255,0.95);
             padding: 30px 25px;
             border-radius: 15px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
             max-width: 520px;
             width: 95%;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
         }
 
         h1 {
-            font-size: 1.6rem;
-            margin-top: 0;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.03em;
             text-align: center;
+            margin-top: 0;
+            text-transform: uppercase;
         }
 
         .subtitle {
-            font-size: 0.95rem;
-            margin-bottom: 20px;
             text-align: center;
+            font-size: 0.95rem;
             color: #555;
+            margin-bottom: 20px;
         }
 
         label {
-            display: block;
-            font-size: 0.9rem;
-            margin-bottom: 5px;
             font-weight: 600;
+            font-size: 0.9rem;
         }
 
         input, select {
@@ -73,7 +62,6 @@
             margin-bottom: 15px;
             border-radius: 6px;
             border: 1px solid #ccc;
-            font-size: 0.95rem;
         }
 
         button {
@@ -81,78 +69,61 @@
             padding: 10px;
             border-radius: 8px;
             border: none;
-            font-size: 1rem;
-            font-weight: 600;
             background: #2196f3;
             color: #fff;
+            font-size: 1rem;
+            font-weight: 600;
             cursor: pointer;
-            transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.2s ease;
-        }
-
-        button:hover {
-            background: #1976d2;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            transform: translateY(-1px);
         }
 
         .result {
             margin-top: 15px;
-            padding: 10px;
+            padding: 12px;
             border-radius: 8px;
             background: #e8f5e9;
             border: 1px solid #c8e6c9;
             font-size: 0.95rem;
         }
 
-        .result strong {
-            font-size: 1.05rem;
-        }
-
         #map {
             margin-top: 15px;
-            width: 100%;
-            height: 250px;
+            height: 240px;
             border-radius: 10px;
-            overflow: hidden;
             border: 1px solid #ddd;
         }
 
         .disclaimer {
-            margin-top: 10px;
             font-size: 0.8rem;
             color: #666;
-            text-align: justify;
+            margin-top: 10px;
         }
     </style>
 </head>
+
 <body>
 <div class="form-container">
-    <h1>Prévision du coût de livraison</h1>
+    <h1>Estimation franco livraison</h1>
     <p class="subtitle">
-        Estimation indicative selon la distance et le nombre de palettes.<br>
-        Pour un tarif définitif, merci de valider avec notre équipe commerciale.
+        Indication basée sur le temps de parcours et le volume.<br>
+        Validation finale réalisée par notre équipe.
     </p>
 
-    <!-- On récupère le type de palette via l'URL : ?ref=800x1200LG par ex. -->
-    <div id="palette-info" style="font-size:0.9rem;margin-bottom:10px;font-style:italic;"></div>
+    <div id="palette-info" style="font-style:italic;font-size:0.9rem;margin-bottom:10px;"></div>
 
     <form id="livraison-form">
-        <label for="adresse">Adresse ou ville de livraison (indicatif)</label>
-        <input type="text" id="adresse" name="adresse" placeholder="Ex. Bordeaux, 33000">
+        <label>Distance estimée depuis notre dépôt (km)</label>
+        <input type="number" id="distance" min="1" required placeholder="Ex. 120">
 
-        <label for="distance">Distance estimée depuis notre dépôt (en km)</label>
-        <input type="number" id="distance" name="distance" min="1" step="1" required placeholder="Ex. 80">
+        <label>Nombre de palettes</label>
+        <input type="number" id="palettes" min="1" required placeholder="Ex. 33">
 
-        <label for="palettes">Nombre de palettes</label>
-        <input type="number" id="palettes" name="palettes" min="1" step="1" required placeholder="Ex. 35">
-
-        <label for="chargement">Type de chargement</label>
-        <select id="chargement" name="chargement">
+        <label>Type de chargement</label>
+        <select id="chargement">
             <option value="partiel">Groupage / Chargement partiel</option>
             <option value="complet">Camion complet</option>
         </select>
 
-        <button type="submit">Estimer le coût de livraison</button>
+        <button type="submit">Estimer le franco / palette</button>
     </form>
 
     <div id="resultat" class="result" style="display:none;"></div>
@@ -160,84 +131,67 @@
     <div id="map"></div>
 
     <p class="disclaimer">
-        Les montants calculés sont fournis à titre purement indicatif sur la base d’un modèle simple.
-         Ils ne valent pas offre commerciale. Les tarifs réels peuvent varier
-        selon le transporteur, les volumes, l’accessibilité du site et la saisonnalité.
+        Estimation indicative basée sur un modèle temps transport (80 €/h).
+        Les conditions réelles peuvent évoluer selon l’accès, la saison et le volume.
     </p>
 </div>
 
 <script>
-    // 1) Récupération de la référence de palette dans l'URL (ex: ?ref=800x1200LG)
     const params = new URLSearchParams(window.location.search);
     const refPalette = params.get("ref");
+    const info = document.getElementById("palette-info");
 
-    const paletteInfoDiv = document.getElementById("palette-info");
-    if (refPalette) {
-        paletteInfoDiv.textContent =
-            "Calcul en cours pour la référence : " + refPalette + " (palettes remises dans le circuit).";
-    } else {
-        paletteInfoDiv.textContent =
-            "Sélectionnez vos palettes dans notre stock puis cliquez sur « Délais » pour lancer un calcul.";
-    }
+    info.textContent = refPalette
+        ? "Référence sélectionnée : " + refPalette
+        : "Sélectionnez vos palettes pour lancer une estimation.";
 
-    // 2) Gestion du formulaire et calcul d’un coût indicatif
     const form = document.getElementById("livraison-form");
     const resDiv = document.getElementById("resultat");
 
-    form.addEventListener("submit", function (e) {
+    form.addEventListener("submit", function(e) {
         e.preventDefault();
 
-        const distance = parseFloat(document.getElementById("distance").value || "0");
-        const palettes = parseInt(document.getElementById("palettes").value || "0", 10);
+        const distance = Number(document.getElementById("distance").value);
+        const palettes = Number(document.getElementById("palettes").value);
         const chargement = document.getElementById("chargement").value;
 
-        if (!distance || !palettes) {
-            alert("Merci de renseigner au minimum la distance et le nombre de palettes.");
-            return;
-        }
-
-        // MODELE À ADAPTER :
-        // - forfait de prise en charge
-        // - coût au km
-        // - coût par palette
-        let forfait = 100;      // € de base
-        let coutKm = 1.15;      // €/km
-        let coutPalette = 0.20; // €/palette
+        let forfait = 100;
+        let tauxHoraire = 80;     // €/h
+        let vitesseMin = 70;
+        let vitesseMax = 90;
+        let variablePalette = 0.30;
 
         if (chargement === "complet") {
-            forfait = 80;
-            coutKm = 1.0;
+            forfait = 85;
+            variablePalette = 0.20;
         }
 
-        const coutTotal = forfait + distance * coutKm + palettes * coutPalette;
+        const tempsMin = distance / vitesseMax;
+        const tempsMax = distance / vitesseMin;
+
+        const totalMin = forfait + (tempsMin * tauxHoraire) + (palettes * variablePalette);
+        const totalMax = forfait + (tempsMax * tauxHoraire) + (palettes * variablePalette);
+
+        const francoMin = totalMin / palettes;
+        const francoMax = totalMax / palettes;
 
         resDiv.style.display = "block";
         resDiv.innerHTML =
-            "<strong>Estimation indicative :</strong><br>" +
-            "≈ " + coutTotal.toFixed(2) + " € HT pour " + palettes +
-            " palettes sur " + distance + " km.<br>" +
-            "<span style='font-size:0.85rem;'>Référence : " + (refPalette || "non précisée") + "</span>";
+            "<strong>Fourchette franco indicative :</strong><br>" +
+            "<strong>" + francoMin.toFixed(2) + " €</strong> à <strong>" +
+            francoMax.toFixed(2) + " €</strong> HT / palette livrée<br>" +
+            "<span style='font-size:0.85rem;'>Base : 80 €/h • " +
+            palettes + " palettes • " + distance + " km</span>";
     });
 
-    // 3) Carte Leaflet / OpenStreetMap
-    const depotLat = 45.246;   // Montlieu-la-Garde (approx. ZA Le Milan)
-const depotLng = -0.256;
-;
-
-    const map = L.map("map").setView([depotLat, depotLng], 8);
-
+    // Carte
+    const map = L.map("map").setView([45.246, -0.256], 8);
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        maxZoom: 19,
         attribution: "&copy; OpenStreetMap"
     }).addTo(map);
-
-    L.marker([depotLat, depotLng])
-        .addTo(map)
-        .bindPopup("Implantation de Palettes Distribution")
+    L.marker([45.246, -0.256]).addTo(map)
+        .bindPopup("Dépôt Palettes Distribution")
         .openPopup();
 </script>
 </body>
 </html>
-
-
-
