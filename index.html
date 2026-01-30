@@ -1,4 +1,4 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -104,7 +104,7 @@
 <div class="form-container">
     <h1>Estimation franco livraison</h1>
     <p class="subtitle">
-        Indication basée sur le temps de parcours et le volume.<br>
+        Indication basée sur la distance et le volume.<br>
         Validation finale réalisée par notre équipe.
     </p>
 
@@ -131,12 +131,13 @@
     <div id="map"></div>
 
     <p class="disclaimer">
-        Estimation indicative basée sur un modèle temps transport (80 €/h).
-        Les conditions réelles peuvent évoluer selon l’accès, la saison et le volume.
+        Estimation indicative établie selon un modèle logistique interne.
+        Les conditions réelles peuvent évoluer selon l’accès, la saison et les volumes.
     </p>
 </div>
 
 <script>
+    // Référence palette (optionnelle)
     const params = new URLSearchParams(window.location.search);
     const refPalette = params.get("ref");
     const info = document.getElementById("palette-info");
@@ -155,22 +156,19 @@
         const palettes = Number(document.getElementById("palettes").value);
         const chargement = document.getElementById("chargement").value;
 
-        let forfait = 100;
-        let tauxHoraire = 80;     // €/h
-        let vitesseMin = 70;
-        let vitesseMax = 90;
+        // 🔒 Modèle interne (non affiché)
+        const baseKm = 2.00;        // €/km
+        let forfait = 90;
         let variablePalette = 0.30;
 
         if (chargement === "complet") {
-            forfait = 85;
+            forfait = 75;
             variablePalette = 0.20;
         }
 
-        const tempsMin = distance / vitesseMax;
-        const tempsMax = distance / vitesseMin;
-
-        const totalMin = forfait + (tempsMin * tauxHoraire) + (palettes * variablePalette);
-        const totalMax = forfait + (tempsMax * tauxHoraire) + (palettes * variablePalette);
+        // Fourchette de sécurité logistique ±10 %
+        const totalMin = (distance * baseKm * 0.9) + forfait + (palettes * variablePalette);
+        const totalMax = (distance * baseKm * 1.1) + forfait + (palettes * variablePalette);
 
         const francoMin = totalMin / palettes;
         const francoMax = totalMax / palettes;
@@ -180,7 +178,7 @@
             "<strong>Fourchette franco indicative :</strong><br>" +
             "<strong>" + francoMin.toFixed(2) + " €</strong> à <strong>" +
             francoMax.toFixed(2) + " €</strong> HT / palette livrée<br>" +
-            "<span style='font-size:0.85rem;'>Base : 80 €/h • " +
+            "<span style='font-size:0.85rem;'>Base logistique interne • " +
             palettes + " palettes • " + distance + " km</span>";
     });
 
@@ -189,9 +187,11 @@
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: "&copy; OpenStreetMap"
     }).addTo(map);
-    L.marker([45.246, -0.256]).addTo(map)
+    L.marker([45.246, -0.256])
+        .addTo(map)
         .bindPopup("Dépôt Palettes Distribution")
         .openPopup();
 </script>
 </body>
 </html>
+
