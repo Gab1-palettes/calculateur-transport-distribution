@@ -3,406 +3,439 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OXV 2026 - Veille Image Stratégique</title>
+    <title>OXV 2026 - Veille Image & Performance Stratégique</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
-        
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@200;400;700&display=swap');
+
         :root {
-            --oxv-cream: #FDFCFB;
-            --oxv-charcoal: #1A1A1A;
-            --oxv-red: #D91E18;
-            --oxv-gold: #C5A059;
+            --oxv-black: #050505;
+            --oxv-dark-gray: #0D0D0D;
+            --oxv-red: #FF0000;
+            --oxv-red-glow: rgba(255, 0, 0, 0.4);
+            --oxv-border: rgba(255, 255, 255, 0.08);
         }
 
         body {
+            background-color: var(--oxv-black);
+            color: #ffffff;
             font-family: 'Inter', sans-serif;
-            background-color: var(--oxv-cream);
-            color: var(--oxv-charcoal);
             overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        .heading-font { font-family: 'Orbitron', sans-serif; }
+
+        /* Effet de scanline HUD */
+        .scanline {
+            width: 100%;
+            height: 100px;
+            z-index: 99;
+            background: linear-gradient(0deg, rgba(0, 0, 0, 0) 0%, rgba(255, 0, 0, 0.02) 50%, rgba(0, 0, 0, 0) 100%);
+            opacity: 0.1;
+            position: absolute;
+            bottom: 100%;
+            animation: scanline 8s linear infinite;
+        }
+
+        @keyframes scanline {
+            0% { bottom: 100%; }
+            100% { bottom: -100px; }
+        }
+
+        .glass-card {
+            background: var(--oxv-dark-gray);
+            border: 1px solid var(--oxv-border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--oxv-red);
+            opacity: 0.7;
         }
 
         .chart-container {
             position: relative;
             width: 100%;
-            max-width: 700px;
-            margin-left: auto;
-            margin-right: auto;
-            height: 380px;
-            max-height: 450px;
+            height: 350px;
+            max-height: 400px;
         }
 
-        .glass-card {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(0, 0, 0, 0.05);
-        }
-
-        .nav-link.active {
+        .btn-nav.active {
             color: var(--oxv-red);
             border-bottom: 2px solid var(--oxv-red);
+            text-shadow: 0 0 10px var(--oxv-red-glow);
         }
 
-        .b2b-gradient { background: linear-gradient(135deg, #1A1A1A 0%, #333 100%); }
-        .b2c-gradient { background: linear-gradient(135deg, #D91E18 0%, #96130F 100%); }
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+
+        .tab-content.active { display: block; }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .animate-fadeIn { animation: fadeIn 0.5s ease-out forwards; }
+
+        .hud-border {
+            border: 1px solid var(--oxv-border);
+            padding: 2px;
+            position: relative;
+        }
+
+        .hud-corner {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border: 2px solid var(--oxv-red);
+        }
+        .c-tl { top: -2px; left: -2px; border-right: 0; border-bottom: 0; }
+        .c-tr { top: -2px; right: -2px; border-left: 0; border-bottom: 0; }
+        .c-bl { bottom: -2px; left: -2px; border-right: 0; border-top: 0; }
+        .c-br { bottom: -2px; right: -2px; border-left: 0; border-top: 0; }
+
+        /* Scrollbar personnalisée */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: var(--oxv-black); }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--oxv-red); }
     </style>
 </head>
 <body class="antialiased">
 
-<!-- Chosen Palette: OXV Prestige (Crème #FDFCFB, Anthracite #1A1A1A, Rouge Course #D91E18). Un mélange de minimalisme luxe et d'énergie sportive. -->
-<!-- Application Structure Plan: Une SPA organisée par piliers stratégiques : Vision 2026, Analyse d'Audience (CSP+), Dualité B2B/B2C, et Positionnement Performance vs Promotion. La navigation est fluide pour permettre une lecture non-linéaire des insights de veille. -->
-<!-- Visualization & Content Choices: 
-     1. ADN de Marque 2026 -> Radar Chart (Chart.js) pour montrer l'équilibre entre technologie, luxe et émotion. 
-     2. Canaux de Promotion B2B vs B2C -> Bar Chart groupé pour comparer l'efficacité des vecteurs d'image.
-     3. Pyramide des Attentes Client -> Liste interactive pour détailler les besoins de la cible CSP+.
-     Confirmant l'absence de SVG et Mermaid. Utilisation de Canvas pour les graphiques. -->
-<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <!-- Chosen Palette: Midnight Performance (Noir profond, Carbone, Rouge Racing #FF0000). -->
+    <!-- Application Structure Plan: Dashboard interactif HUD-style. Architecture SPA avec switch de sections. Focus sur la dualité B2B (Efficience/Réseau) et B2C (Statut/Adrénaline). -->
+    <!-- Visualization & Content Choices: 
+         1. ADN de Marque -> Radar Chart pour montrer l'équilibre entre technologie, luxe et émotion. 
+         2. Canaux de Rayonnement -> Horizontal Bar Chart pour l'impact par plateforme.
+         3. Matrice de Performance -> Grid interactive avec détails sur clic. 
+         Confirmant l'absence de SVG et Mermaid. Utilisation de Canvas pour les graphiques. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
 
-<nav class="sticky top-0 z-50 bg-white/90 border-b border-gray-100 px-6 py-4">
-    <div class="max-w-7xl mx-auto flex justify-between items-center">
-        <div class="flex items-center space-x-2">
-            <span class="text-2xl font-extrabold tracking-tighter text-black">OXV</span>
-            <span class="text-xs font-light uppercase tracking-widest border-l pl-2 border-gray-300 text-gray-500">Only Xtreme Vehicle</span>
-        </div>
-        <div class="hidden md:flex space-x-8 text-sm font-semibold uppercase tracking-wider">
-            <button onclick="scrollToSection('vision')" class="nav-link hover:text-red-600 transition">Vision 2026</button>
-            <button onclick="scrollToSection('audience')" class="nav-link hover:text-red-600 transition">Cible CSP+</button>
-            <button onclick="scrollToSection('dualite')" class="nav-link hover:text-red-600 transition">B2B vs B2C</button>
-            <button onclick="scrollToSection('performance')" class="nav-link hover:text-red-600 transition">Performance</button>
-        </div>
-        <div class="text-xs font-bold bg-red-600 text-white px-3 py-1 rounded-full uppercase">Projet 2026</div>
-    </div>
-</nav>
+    <div class="scanline"></div>
 
-<header class="relative h-[60vh] flex items-center justify-center bg-black overflow-hidden">
-    <div class="absolute inset-0 opacity-40">
-        <!-- Canvas pour un effet de particules élégant ou fond sobre -->
-        <canvas id="headerCanvas" class="w-full h-full"></canvas>
-    </div>
-    <div class="relative z-10 text-center px-4">
-        <h1 class="text-5xl md:text-7xl font-extrabold text-white mb-4 tracking-tight animate-fadeIn">L'IMAGE DE L'EXTRÊME</h1>
-        <p class="text-xl text-gray-300 max-w-2xl mx-auto font-light animate-fadeIn" style="animation-delay: 0.2s">
-            Veille stratégique et promotionnelle pour Only Xtreme Vehicle. Redéfinir l'expérience circuit pour l'élite de 2026.
-        </p>
-    </div>
-</header>
-
-<main class="max-w-7xl mx-auto px-6 py-16 space-y-24">
-
-    <!-- Section 1: Vision 2026 & Innovation -->
-    <section id="vision" class="space-y-12 scroll-mt-24">
-        <div class="text-center max-w-3xl mx-auto">
-            <h2 class="text-3xl font-extrabold mb-4">L'ADN OXV en 2026</h2>
-            <p class="text-gray-600 italic">
-                En 2026, l'innovation ne réside plus seulement dans la puissance brute, mais dans l'intelligence de la donnée et l'exclusivité du service.
-            </p>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div class="glass-card p-8 rounded-2xl shadow-xl border border-gray-100">
-                <h3 class="text-xl font-bold mb-6 text-center">Équilibre Identitaire du Projet</h3>
-                <div class="chart-container">
-                    <canvas id="brandRadar"></canvas>
+    <!-- Navigation HUD -->
+    <nav class="fixed top-0 w-full z-50 bg-black/80 backdrop-blur-lg border-b border-white/10 px-6 py-5">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <div class="text-3xl font-black italic tracking-tighter heading-font text-white">
+                    OXV <span class="text-red-600">.</span>
+                </div>
+                <div class="hidden lg:block h-8 w-[1px] bg-white/20 mx-4"></div>
+                <div class="hidden lg:block">
+                    <span class="text-[10px] uppercase tracking-[0.4em] text-gray-500 font-bold">Only Xtreme Vehicle</span>
+                    <span class="block text-[8px] text-red-500 font-mono tracking-widest">EST. 2026 / PRE-PRODUCTION PHASE</span>
                 </div>
             </div>
-            <div class="space-y-6">
-                <div class="p-6 bg-white border border-gray-100 rounded-xl hover:shadow-md transition">
-                    <h4 class="font-bold text-red-600 mb-2">01. Télémétrie IA en Temps Réel</h4>
-                    <p class="text-sm text-gray-600">L'image d'OXV est associée à la haute technologie : chaque client reçoit une analyse prédictive de sa performance par IA.</p>
-                </div>
-                <div class="p-6 bg-white border border-gray-100 rounded-xl hover:shadow-md transition">
-                    <h4 class="font-bold text-red-600 mb-2">02. Hub Électrique Haute Performance</h4>
-                    <p class="text-sm text-gray-600">Positionnement écologique et extrême : prouver que le futur du circuit est durable sans sacrifier l'adrénaline.</p>
-                </div>
-                <div class="p-6 bg-white border border-gray-100 rounded-xl hover:shadow-md transition">
-                    <h4 class="font-bold text-red-600 mb-2">03. Production Médias Immersive</h4>
-                    <p class="text-sm text-gray-600">Chaque session est capturée en 8K avec drones autonomes, transformant le client en icône de sa propre marque.</p>
-                </div>
+
+            <div class="flex space-x-10 text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                <button onclick="switchTab('vision')" id="nav-vision" class="btn-nav active transition-all duration-300">Veille Image</button>
+                <button onclick="switchTab('performance')" id="nav-performance" class="btn-nav transition-all duration-300">Performance B2B/B2C</button>
+                <button onclick="switchTab('strategie')" id="nav-strategie" class="btn-nav transition-all duration-300">Stratégie 2026</button>
+            </div>
+
+            <div class="flex items-center space-x-3">
+                <div class="w-2 h-2 bg-red-600 rounded-full animate-pulse shadow-[0_0_10px_#ff0000]"></div>
+                <span class="text-[10px] font-mono text-gray-400">SYS_ONLINE_45.2N</span>
             </div>
         </div>
-    </section>
+    </nav>
 
-    <!-- Section 2: Cible CSP+ -->
-    <section id="audience" class="bg-stone-100 -mx-6 px-6 py-20 scroll-mt-24">
-        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12">
-            <div>
-                <h2 class="text-3xl font-extrabold mb-6">La Clientèle CSP+ de 2026</h2>
-                <p class="text-gray-700 mb-8 leading-relaxed">
-                    Les dirigeants, entrepreneurs et collectionneurs ne cherchent plus seulement à "rouler". Ils cherchent une validation sociale (Promotion) et un dépassement de soi mesurable (Performance).
-                </p>
-                <div class="space-y-4">
-                    <div class="flex items-center space-x-4 p-4 bg-white rounded-lg shadow-sm">
-                        <div class="w-12 h-12 bg-red-100 text-red-600 flex items-center justify-center rounded-full font-bold">92%</div>
-                        <p class="text-sm font-medium">Privilégient l'accès à un réseau B2B qualitatif sur circuit.</p>
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-6 pt-32 pb-20">
+
+        <!-- SECTION 1: VEILLE IMAGE -->
+        <section id="tab-vision" class="tab-content active">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-20">
+                <div class="space-y-8">
+                    <div class="inline-block px-3 py-1 bg-red-600/10 border border-red-600/30 text-red-500 text-[10px] font-bold uppercase tracking-widest">
+                        Rapport de Veille Identitaire
                     </div>
-                    <div class="flex items-center space-x-4 p-4 bg-white rounded-lg shadow-sm">
-                        <div class="w-12 h-12 bg-black text-white flex items-center justify-center rounded-full font-bold">88%</div>
-                        <p class="text-sm font-medium">Exigent une personnalisation totale de l'accueil (Conciergerie).</p>
+                    <h1 class="text-5xl md:text-7xl font-black uppercase heading-font leading-none tracking-tighter">
+                        L'Élite de <br><span class="text-red-600">L'Extrême</span>
+                    </h1>
+                    <p class="text-gray-400 text-lg font-light leading-relaxed max-w-xl">
+                        En 2026, l'image de **OXV** doit incarner la fusion parfaite entre la brutalité mécanique et l'intelligence artificielle. Notre cible CSP+ ne cherche plus seulement de la vitesse, mais un statut technologique exclusif.
+                    </p>
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="hud-border">
+                            <div class="hud-corner c-tl"></div><div class="hud-corner c-tr"></div>
+                            <div class="hud-corner c-bl"></div><div class="hud-corner c-br"></div>
+                            <div class="p-4">
+                                <span class="block text-gray-500 text-[10px] uppercase font-bold mb-1">Cible Promotion</span>
+                                <span class="text-xl font-bold heading-font tracking-tight uppercase">Statut Social</span>
+                            </div>
+                        </div>
+                        <div class="hud-border">
+                            <div class="hud-corner c-tl"></div><div class="hud-corner c-tr"></div>
+                            <div class="hud-corner c-bl"></div><div class="hud-corner c-br"></div>
+                            <div class="p-4">
+                                <span class="block text-gray-500 text-[10px] uppercase font-bold mb-1">Cible Performance</span>
+                                <span class="text-xl font-bold heading-font tracking-tight uppercase">ROI Emotionnel</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card p-10 rounded-2xl shadow-2xl">
+                    <h3 class="text-center text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-8">ADN de Marque : Radar de Positionnement 2026</h3>
+                    <div class="chart-container">
+                        <canvas id="radarChart"></canvas>
                     </div>
                 </div>
             </div>
-            <div class="glass-card p-8 rounded-2xl">
-                <h3 class="text-xl font-bold mb-6">Attentes : Promotion vs Performance</h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="glass-card p-8 group hover:bg-white/5 transition-all">
+                    <div class="text-red-600 text-3xl mb-4 heading-font italic">B2B</div>
+                    <h4 class="font-bold text-white mb-2 uppercase tracking-wider">Performance Réseau</h4>
+                    <p class="text-xs text-gray-500 leading-relaxed">
+                        Le circuit devient le nouveau "green" de golf. OXV est l'outil de promotion privilégié pour sceller des partenariats stratégiques entre décideurs.
+                    </p>
+                </div>
+                <div class="glass-card p-8 group hover:bg-white/5 transition-all">
+                    <div class="text-white text-3xl mb-4 heading-font italic">B2C</div>
+                    <h4 class="font-bold text-white mb-2 uppercase tracking-wider">Promotion du Soi</h4>
+                    <p class="text-xs text-gray-500 leading-relaxed">
+                        Chaque seconde est captée en 8K par nos drones autonomes. Le client ne repart pas seulement avec des souvenirs, mais avec une image de "Pilote Elite".
+                    </p>
+                </div>
+                <div class="glass-card p-8 group hover:bg-white/5 transition-all">
+                    <div class="text-gray-500 text-3xl mb-4 heading-font italic">TECH</div>
+                    <h4 class="font-bold text-white mb-2 uppercase tracking-wider">Veille Innovation</h4>
+                    <p class="text-xs text-gray-500 leading-relaxed">
+                        Intégration de la télémétrie holographique. L'image de marque OXV est indissociable de la pointe technologique automobile.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: PERFORMANCE -->
+        <section id="tab-performance" class="tab-content">
+            <div class="mb-12">
+                <h2 class="text-3xl font-black heading-font uppercase mb-2">Analyse des Canaux de Promotion</h2>
+                <p class="text-gray-500">Efficacité des vecteurs d'image par segment B2B et B2C.</p>
+            </div>
+
+            <div class="bg-zinc-900/50 p-10 rounded-3xl border border-white/10 mb-12">
                 <div class="chart-container">
-                    <canvas id="expectationsChart"></canvas>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Section 3: Dualité B2B / B2C -->
-    <section id="dualite" class="scroll-mt-24">
-        <div class="text-center mb-16">
-            <h2 class="text-3xl font-extrabold mb-4">Stratégie Image Duale</h2>
-            <p class="text-gray-600">Comment OXV communique différemment selon ses cibles.</p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <!-- B2C -->
-            <div class="b2c-gradient p-1 rounded-3xl overflow-hidden shadow-2xl">
-                <div class="bg-white rounded-[calc(1.5rem-4px)] p-10 h-full flex flex-col">
-                    <span class="text-red-600 font-bold tracking-widest text-xs uppercase mb-4">Focus Individuel</span>
-                    <h3 class="text-3xl font-black mb-6 italic">B2C : L'Émotion Brute</h3>
-                    <ul class="space-y-4 flex-grow">
-                        <li class="flex items-start"><span class="text-red-600 mr-2">●</span> <strong>Promotion :</strong> Valorisation de l'ego, storytelling "Pilote d'un jour".</li>
-                        <li class="flex items-start"><span class="text-red-600 mr-2">●</span> <strong>Performance :</strong> Tracking de progression via application mobile dédiée.</li>
-                        <li class="flex items-start"><span class="text-red-600 mr-2">●</span> <strong>Support :</strong> Instagram / TikTok Elite / YouTube 8K.</li>
-                    </ul>
-                    <button class="mt-8 py-3 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition">Voir les Insights B2C</button>
+                    <canvas id="barChart"></canvas>
                 </div>
             </div>
 
-            <!-- B2B -->
-            <div class="b2b-gradient p-1 rounded-3xl overflow-hidden shadow-2xl">
-                <div class="bg-white rounded-[calc(1.5rem-4px)] p-10 h-full flex flex-col">
-                    <span class="text-gray-400 font-bold tracking-widest text-xs uppercase mb-4">Focus Corporate</span>
-                    <h3 class="text-3xl font-black mb-6 italic">B2B : Le Hub Stratégique</h3>
-                    <ul class="space-y-4 flex-grow">
-                        <li class="flex items-start"><span class="text-black mr-2">●</span> <strong>Promotion :</strong> Image d'entreprise innovante et performante.</li>
-                        <li class="flex items-start"><span class="text-black mr-2">●</span> <strong>Performance :</strong> Teambuilding de haut vol, networking exclusif.</li>
-                        <li class="flex items-start"><span class="text-black mr-2">●</span> <strong>Support :</strong> LinkedIn / Cercles de Décideurs / Événements Privés.</li>
-                    </ul>
-                    <button class="mt-8 py-3 bg-black text-white font-bold rounded-lg hover:bg-gray-800 transition">Voir les Insights B2B</button>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <div class="space-y-6">
+                    <h3 class="text-xl font-bold uppercase tracking-wider border-b border-red-600/50 pb-2 inline-block">Leviers Performance B2B</h3>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center p-4 bg-white/5 rounded-lg border border-white/5">
+                            <span class="text-sm font-bold text-gray-300 uppercase">Clubs de Décideurs</span>
+                            <span class="text-red-500 font-mono">92% IMPACT</span>
+                        </div>
+                        <div class="flex justify-between items-center p-4 bg-white/5 rounded-lg border border-white/5">
+                            <span class="text-sm font-bold text-gray-300 uppercase">LinkedIn Elite Series</span>
+                            <span class="text-red-500 font-mono">75% IMPACT</span>
+                        </div>
+                        <div class="flex justify-between items-center p-4 bg-white/5 rounded-lg border border-white/5">
+                            <span class="text-sm font-bold text-gray-300 uppercase">Séminaires VIP (Circuit)</span>
+                            <span class="text-red-500 font-mono">88% IMPACT</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="space-y-6">
+                    <h3 class="text-xl font-bold uppercase tracking-wider border-b border-white/50 pb-2 inline-block">Leviers Promotion B2C</h3>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center p-4 bg-white/5 rounded-lg border border-white/5">
+                            <span class="text-sm font-bold text-gray-300 uppercase">Production Vidéo Drone FPV</span>
+                            <span class="text-white font-mono">96% IMPACT</span>
+                        </div>
+                        <div class="flex justify-between items-center p-4 bg-white/5 rounded-lg border border-white/5">
+                            <span class="text-sm font-bold text-gray-300 uppercase">Instagram Prestige Feed</span>
+                            <span class="text-white font-mono">82% IMPACT</span>
+                        </div>
+                        <div class="flex justify-between items-center p-4 bg-white/5 rounded-lg border border-white/5">
+                            <span class="text-sm font-bold text-gray-300 uppercase">Cercle de Propriétaires</span>
+                            <span class="text-white font-mono">70% IMPACT</span>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Section 4: Performance & Canaux -->
-    <section id="performance" class="space-y-12 scroll-mt-24">
-        <div class="flex flex-col md:flex-row justify-between items-end gap-6">
-            <div class="max-w-xl">
-                <h2 class="text-3xl font-extrabold mb-4">Efficacité des Canaux de Promotion</h2>
-                <p class="text-gray-600">
-                    Analyse des vecteurs d'image pour maximiser la conversion B2B et B2C en France pour 2026.
+        <!-- SECTION 3: STRATEGIE -->
+        <section id="tab-strategie" class="tab-content">
+            <div class="max-w-3xl mx-auto text-center mb-16">
+                <h2 class="text-4xl font-black heading-font uppercase mb-4 italic text-red-600">Objectif : Domination Image 2026</h2>
+                <p class="text-gray-400">Calendrier de déploiement de la veille et du positionnement site web.</p>
+            </div>
+
+            <div class="space-y-4">
+                <div class="glass-card p-10 flex flex-col md:flex-row gap-8 items-center">
+                    <div class="w-full md:w-1/3">
+                        <div class="text-[10px] font-bold text-red-500 mb-2 uppercase tracking-[0.3em]">Phase 01</div>
+                        <h4 class="text-2xl font-bold heading-font uppercase">E-Lancement "Stealth"</h4>
+                    </div>
+                    <div class="w-full md:w-2/3 text-sm text-gray-400">
+                        Créer une rareté digitale. Le site internet ne sera accessible que sur invitation ou parrainage pour les premiers mois, renforçant l'image d'exclusivité totale pour la clientèle CSP+.
+                    </div>
+                </div>
+                <div class="glass-card p-10 flex flex-col md:flex-row gap-8 items-center border-l-white/20">
+                    <div class="w-full md:w-1/3">
+                        <div class="text-[10px] font-bold text-gray-500 mb-2 uppercase tracking-[0.3em]">Phase 02</div>
+                        <h4 class="text-2xl font-bold heading-font uppercase">Performance Hub</h4>
+                    </div>
+                    <div class="w-full md:w-2/3 text-sm text-gray-400">
+                        Intégration d'un tableau de bord client en ligne. Chaque session OXV est archivée avec télémétrie, vidéos 4K et certificats de performance sécurisés par Blockchain.
+                    </div>
+                </div>
+                <div class="glass-card p-10 flex flex-col md:flex-row gap-8 items-center">
+                    <div class="w-full md:w-1/3">
+                        <div class="text-[10px] font-bold text-red-500 mb-2 uppercase tracking-[0.3em]">Phase 03</div>
+                        <h4 class="text-2xl font-bold heading-font uppercase">Expansion B2B France</h4>
+                        <div class="mt-2 h-1 w-12 bg-red-600"></div>
+                    </div>
+                    <div class="w-full md:w-2/3 text-sm text-gray-400">
+                        Promotion de journées de circuit dédiées aux comités de direction des grandes entreprises françaises. L'image OXV devient le standard du séminaire "haute intensité".
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer HUD -->
+    <footer class="border-t border-white/5 py-12 px-6 bg-black">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center text-gray-600">
+            <div class="mb-6 md:mb-0 text-center md:text-left">
+                <div class="text-white font-bold heading-font text-lg mb-2">OXV STRAT_OPS</div>
+                <p class="text-[9px] uppercase tracking-widest leading-loose font-bold">
+                    Veille Image & Intelligence Stratégique Automobile<br>
+                    Propriété Exclusive d'Only Xtreme Vehicle &copy; 2026
                 </p>
             </div>
-            <div class="flex space-x-2">
-                <button onclick="updateChannelsChart('impact')" class="px-4 py-2 bg-gray-200 rounded-md text-xs font-bold uppercase hover:bg-gray-300">Par Impact</button>
-                <button onclick="updateChannelsChart('cost')" class="px-4 py-2 bg-gray-200 rounded-md text-xs font-bold uppercase hover:bg-gray-300">Par Coût</button>
+            <div class="flex space-x-8 text-[9px] font-bold uppercase tracking-[0.2em]">
+                <span class="hover:text-red-500 cursor-pointer transition">Promotion</span>
+                <span class="hover:text-red-500 cursor-pointer transition">Performance</span>
+                <span class="hover:text-red-500 cursor-pointer transition">Confidentialité</span>
             </div>
         </div>
+    </footer>
 
-        <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
-            <div class="chart-container">
-                <canvas id="channelsChart"></canvas>
-            </div>
-        </div>
-    </section>
+    <script>
+        // Configuration Chart.js pour le style "Dark Tech"
+        Chart.defaults.color = '#777';
+        Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.05)';
+        Chart.defaults.font.family = "'Inter', sans-serif";
 
-</main>
-
-<footer class="bg-black text-white py-20 px-6">
-    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center border-b border-gray-800 pb-12 mb-12">
-        <div class="mb-8 md:mb-0 text-center md:text-left">
-            <div class="text-3xl font-black mb-2 tracking-tighter">OXV <span class="text-red-600">2026</span></div>
-            <p class="text-gray-500 text-sm max-w-xs uppercase tracking-widest">Only Xtreme Vehicle - L'élite du circuit.</p>
-        </div>
-        <div class="grid grid-cols-2 gap-8 text-sm">
-            <div>
-                <h5 class="font-bold mb-4 uppercase tracking-widest text-red-600">Veille</h5>
-                <ul class="space-y-2 text-gray-400">
-                    <li>Image de marque</li>
-                    <li>Technologie</li>
-                    <li>Concurrentielle</li>
-                </ul>
-            </div>
-            <div>
-                <h5 class="font-bold mb-4 uppercase tracking-widest text-red-600">Contact</h5>
-                <ul class="space-y-2 text-gray-400">
-                    <li>Bordeaux, FR</li>
-                    <li>oxv-project@2026.fr</li>
-                </ul>
-            </div>
-        </div>
-    </div>
-    <div class="max-w-7xl mx-auto text-center text-xs text-gray-600">
-        &copy; 2026 Only Xtreme Vehicle. Tous droits réservés. Confidentialité & Performance.
-    </div>
-</footer>
-
-<script>
-    // --- Data and Charts Configuration ---
-    
-    // 1. Radar Chart: Brand DNA
-    const ctxRadar = document.getElementById('brandRadar').getContext('2d');
-    const brandRadar = new Chart(ctxRadar, {
-        type: 'radar',
-        data: {
-            labels: ['Innovation 2026', 'Prestige CSP+', 'Performance Pure', 'Sécurité/IA', 'Exclusivité', 'Émotion/Fun'],
-            datasets: [{
-                label: 'Profil OXV',
-                data: [95, 90, 85, 92, 98, 88],
-                backgroundColor: 'rgba(217, 30, 24, 0.2)',
-                borderColor: '#D91E18',
-                pointBackgroundColor: '#D91E18',
-                borderWidth: 3
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                r: {
-                    angleLines: { color: 'rgba(0,0,0,0.1)' },
-                    grid: { color: 'rgba(0,0,0,0.1)' },
-                    pointLabels: { font: { size: 12, weight: 'bold' } },
-                    suggestedMin: 50,
-                    suggestedMax: 100
-                }
+        // 1. Radar Chart : ADN Marque
+        const ctxRadar = document.getElementById('radarChart').getContext('2d');
+        const radarChart = new Chart(ctxRadar, {
+            type: 'radar',
+            data: {
+                labels: ['Innovation IA', 'Luxe / Exclusivité', 'Adrénaline Pure', 'Networking B2B', 'Statut B2C', 'Sécurité Tech'],
+                datasets: [{
+                    label: 'Profil Image OXV 2026',
+                    data: [95, 98, 88, 92, 94, 85],
+                    backgroundColor: 'rgba(255, 0, 0, 0.15)',
+                    borderColor: '#FF0000',
+                    pointBackgroundColor: '#FF0000',
+                    pointBorderColor: '#fff',
+                    pointHoverRadius: 8,
+                    borderWidth: 3
+                }]
             },
-            plugins: {
-                legend: { display: false }
-            }
-        }
-    });
-
-    // 2. Expectations Chart
-    const ctxExp = document.getElementById('expectationsChart').getContext('2d');
-    const expectationsChart = new Chart(ctxExp, {
-        type: 'doughnut',
-        data: {
-            labels: ['Performance Technique', 'Image & Statut', 'Networking B2B', 'Adrénaline B2C', 'Conciergerie'],
-            datasets: [{
-                data: [25, 30, 20, 15, 10],
-                backgroundColor: ['#1A1A1A', '#D91E18', '#C5A059', '#333333', '#888888'],
-                hoverOffset: 15,
-                borderWidth: 0
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { position: 'bottom' }
-            }
-        }
-    });
-
-    // 3. Channels Chart
-    const ctxChan = document.getElementById('channelsChart').getContext('2d');
-    let channelsChart = new Chart(ctxChan, {
-        type: 'bar',
-        data: {
-            labels: ['Réseaux Sociaux de Luxe', 'Presse Spécialisée CSP+', 'Cercles d\'Affaires / Clubs', 'Youtube / Vidéos IA', 'Événements Privés'],
-            datasets: [
-                {
-                    label: 'Impact B2C',
-                    data: [90, 65, 45, 95, 75],
-                    backgroundColor: '#D91E18',
-                    borderRadius: 5
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
+                        pointLabels: { color: '#aaa', font: { size: 10, weight: 'bold' } },
+                        suggestedMin: 60,
+                        suggestedMax: 100,
+                        ticks: { display: false }
+                    }
                 },
-                {
-                    label: 'Impact B2B',
-                    data: [50, 85, 95, 60, 90],
-                    backgroundColor: '#1A1A1A',
-                    borderRadius: 5
+                plugins: {
+                    legend: { display: false }
                 }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: { beginAtZero: true, max: 100, grid: { color: 'rgba(0,0,0,0.05)' } },
-                x: { grid: { display: false } }
-            },
-            plugins: {
-                legend: { position: 'top' }
             }
-        }
-    });
-
-    // --- Interactive Logic ---
-
-    function scrollToSection(id) {
-        document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
-    }
-
-    function updateChannelsChart(mode) {
-        if (mode === 'cost') {
-            channelsChart.data.datasets[0].data = [60, 80, 70, 50, 95];
-            channelsChart.data.datasets[1].data = [50, 85, 60, 40, 100];
-            channelsChart.options.plugins.legend.title = { display: true, text: 'Indice de coût (Estimation)' };
-        } else {
-            channelsChart.data.datasets[0].data = [90, 65, 45, 95, 75];
-            channelsChart.data.datasets[1].data = [50, 85, 95, 60, 90];
-            channelsChart.options.plugins.legend.title = { display: false };
-        }
-        channelsChart.update();
-    }
-
-    // Header Background Animation
-    const canvas = document.getElementById('headerCanvas');
-    const ctx = canvas.getContext('2d');
-    let particles = [];
-
-    function initHeader() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        for (let i = 0; i < 50; i++) {
-            particles.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                size: Math.random() * 2 + 1,
-                speedX: Math.random() * 1 - 0.5,
-                speedY: Math.random() * 1 - 0.5
-            });
-        }
-    }
-
-    function animateHeader() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-        particles.forEach(p => {
-            p.x += p.speedX;
-            p.y += p.speedY;
-            if (p.x < 0 || p.x > canvas.width) p.speedX *= -1;
-            if (p.y < 0 || p.y > canvas.height) p.speedY *= -1;
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-            ctx.fill();
         });
-        requestAnimationFrame(animateHeader);
-    }
 
-    window.addEventListener('resize', () => {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    });
+        // 2. Bar Chart : Canaux de Promotion
+        const ctxBar = document.getElementById('barChart').getContext('2d');
+        const barChart = new Chart(ctxBar, {
+            type: 'bar',
+            data: {
+                labels: ['Vidéos Drones 8K', 'Clubs Business VIP', 'LinkedIn Performance', 'Instagram / Social', 'Presse Luxe France'],
+                datasets: [
+                    {
+                        label: 'Promotion B2C (%)',
+                        data: [98, 45, 30, 92, 70],
+                        backgroundColor: '#FF0000',
+                        borderRadius: 4
+                    },
+                    {
+                        label: 'Performance B2B (%)',
+                        data: [50, 95, 88, 40, 75],
+                        backgroundColor: '#555',
+                        borderRadius: 4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { 
+                        beginAtZero: true, 
+                        max: 100,
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: { font: { size: 9 } }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#fff', font: { size: 9, weight: 'bold' } }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: { color: '#aaa', font: { size: 10, weight: 'bold' }, padding: 20 }
+                    }
+                }
+            }
+        });
 
-    initHeader();
-    animateHeader();
+        // Gestion des Onglets
+        function switchTab(tabId) {
+            // Cacher tous les contenus
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            // Retirer l'état actif des boutons
+            document.querySelectorAll('.btn-nav').forEach(btn => {
+                btn.classList.remove('active');
+            });
 
-</script>
+            // Afficher le contenu ciblé
+            document.getElementById('tab-' + tabId).classList.add('active');
+            // Activer le bouton correspondant
+            document.getElementById('nav-' + tabId).classList.add('active');
 
+            // Scroll fluide vers le haut du contenu
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
 </body>
 </html>
-
