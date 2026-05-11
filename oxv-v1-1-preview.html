@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>OXV — Preview V1.1</title>
+<style>
+:root {
+  --night:#0B1220;
+  --night-deep:#060B14;
+  --night-card:#0F1726;
+  --cream:#EFE6D2;
+  --cream-soft:#E2D7BD;
+  --cream-mute:rgba(239,230,210,.64);
+  --cream-line:rgba(239,230,210,.14);
+  --copper:#B87333;
+  --copper-glow:#D08F4A;
+  --serif: Georgia, 'Times New Roman', serif;
+  --sans: Inter, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+  --mono: 'SF Mono', Menlo, Consolas, monospace;
+}
+* { box-sizing:border-box; margin:0; padding:0; }
+body {
+  min-height:100vh;
+  background:
+    radial-gradient(ellipse at 70% 20%, rgba(184,115,51,.14), transparent 45%),
+    linear-gradient(180deg, var(--night), var(--night-deep));
+  color:var(--cream);
+  font-family:var(--sans);
+  line-height:1.6;
+}
+.wrap { max-width:1180px; margin:0 auto; padding:0 clamp(22px,5vw,72px); }
+.nav { padding:24px 0; border-bottom:1px solid var(--cream-line); }
+.nav-inner { display:flex; justify-content:space-between; gap:24px; align-items:center; }
+.brand { font-family:var(--serif); font-size:24px; letter-spacing:-.02em; }
+.brand em { color:var(--copper-glow); font-style:italic; }
+.badge { font-family:var(--mono); font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:var(--copper-glow); border:1px solid rgba(208,143,74,.45); padding:9px 12px; }
+.hero { padding:110px 0 80px; }
+.kicker { font-family:var(--mono); font-size:11px; color:var(--copper-glow); letter-spacing:.24em; text-transform:uppercase; margin-bottom:32px; }
+h1 { font-family:var(--serif); font-weight:300; font-size:clamp(56px,9vw,130px); line-height:.92; letter-spacing:-.055em; max-width:850px; margin-bottom:36px; }
+h1 em { color:var(--copper-glow); font-style:italic; }
+.lede { font-family:var(--serif); font-style:italic; color:var(--cream-soft); font-size:clamp(19px,2vw,24px); max-width:720px; margin-bottom:42px; }
+.actions { display:flex; flex-wrap:wrap; gap:12px; }
+.btn { display:inline-flex; align-items:center; justify-content:center; padding:16px 26px; border:1px solid rgba(239,230,210,.28); color:var(--cream); text-decoration:none; font-family:var(--mono); font-size:11px; letter-spacing:.22em; text-transform:uppercase; }
+.btn-primary { background:var(--copper); border-color:var(--copper); color:var(--night-deep); }
+.section { padding:86px 0; border-top:1px solid var(--cream-line); }
+.section-head { display:grid; grid-template-columns:1.1fr .9fr; gap:54px; align-items:end; margin-bottom:46px; }
+.section-num { font-family:var(--serif); color:var(--copper-glow); font-style:italic; margin-bottom:16px; }
+h2 { font-family:var(--serif); font-weight:300; font-size:clamp(38px,5vw,72px); line-height:1; letter-spacing:-.035em; }
+.section-lede { font-family:var(--serif); font-style:italic; color:var(--cream-mute); font-size:19px; }
+.signatures { display:grid; grid-template-columns:repeat(3,1fr); border-top:1px solid var(--cream-line); border-bottom:1px solid var(--cream-line); }
+.signature { padding:42px 32px; border-left:1px solid var(--cream-line); }
+.signature:first-child { border-left:0; }
+.signature-num { font-family:var(--serif); color:var(--copper-glow); font-style:italic; margin-bottom:28px; }
+.signature-title { font-family:var(--serif); font-size:29px; line-height:1.1; margin-bottom:14px; }
+.signature-title em { color:var(--copper-glow); font-style:italic; }
+.signature-text { color:var(--cream-mute); font-size:14px; }
+.note { margin-top:34px; padding:30px; background:rgba(15,23,38,.72); border:1px solid var(--cream-line); }
+.note h3 { font-family:var(--serif); font-weight:300; font-size:32px; margin-bottom:12px; }
+.note p { color:var(--cream-mute); max-width:820px; }
+@media(max-width:850px){ .section-head,.signatures{grid-template-columns:1fr}.signature{border-left:0;border-top:1px solid var(--cream-line)}.signature:first-child{border-top:0}.nav-inner{align-items:flex-start;flex-direction:column} }
+</style>
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-inner">
+    <div class="brand">OXV <em>Only Xtreme Vehicle</em></div>
+    <div class="badge">Preview V1.1 légère</div>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <div class="kicker">Circuit de Haute Saintonge — tracé Beltoise</div>
+      <h1>Le track day comme un <em>parcours pilote.</em></h1>
+      <p class="lede">
+        Les premières sessions OXV ouvriront avec un parcours digital complet : application mobile,
+        validation du dossier pilote et paiement sécurisé.
+      </p>
+      <div class="actions">
+        <a class="btn btn-primary" href="#parcours">Pré-réserver ma place</a>
+        <a class="btn" href="#corporate">Organiser une journée entreprise</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="parcours">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <div class="section-num">Parcours digital intégré</div>
+          <h2>Avant la piste, le parcours pilote.</h2>
+        </div>
+        <p class="section-lede">
+          L'application OXV centralisera l'expérience dès le lancement : pré-réservation,
+          dossier pilote, documents véhicule, paiement sécurisé, informations de session et contenus média.
+        </p>
+      </div>
+
+      <div class="signatures">
+        <article class="signature">
+          <div class="signature-num">01</div>
+          <h3 class="signature-title">Pré-réservation <em>simple</em></h3>
+          <p class="signature-text">
+            Le pilote choisit sa session, renseigne son profil et initie son dossier depuis l'application OXV.
+          </p>
+        </article>
+        <article class="signature">
+          <div class="signature-num">02</div>
+          <h3 class="signature-title">Dossier <em>validé</em></h3>
+          <p class="signature-text">
+            Les informations véhicule, documents requis et conditions de participation sont centralisés avant confirmation.
+          </p>
+        </article>
+        <article class="signature">
+          <div class="signature-num">03</div>
+          <h3 class="signature-title">Paiement <em>sécurisé</em></h3>
+          <p class="signature-text">
+            La réservation sera confirmée depuis l'application OXV, après validation du dossier pilote et paiement sécurisé.
+          </p>
+        </article>
+      </div>
+
+      <div class="note">
+        <h3>OXV lance un parcours complet.</h3>
+        <p>
+          OXV ne lance pas seulement une journée circuit. OXV lance un parcours pilote complet : inscription,
+          validation, paiement, informations de session et contenus média centralisés.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="corporate">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <div class="section-num">Corporate</div>
+          <h2>Un outil d'image pour marques, garages et entreprises.</h2>
+        </div>
+        <p class="section-lede">
+          OXV accompagne les entreprises, concessions, marques et partenaires dans la création de journées circuit
+          à forte valeur d'image : événement client, lancement produit, opération commerciale ou contenu de marque.
+        </p>
+      </div>
+    </div>
+  </section>
+</main>
+</body>
+</html>
